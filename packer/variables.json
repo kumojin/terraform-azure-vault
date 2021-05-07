@@ -1,0 +1,13 @@
+{
+  "client_id": "",
+  "client_secret": "",
+  "tenant_id": "",
+  "subscription_id": "",
+
+  "location": "Canada Central",
+  "resource_group_name": "",
+
+  "ubuntu_version": "20_04-lts",
+  "vm_size": "Standard_DS2_v2",
+  "vault_version": "1.7.1"
+}

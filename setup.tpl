@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+# NB this file will be executed as root by cloud-init.
+# NB to troubleshoot the execution of this file, you can:
+#      1. access the virtual machine boot diagnostics pane in the azure portal.
+#      2. ssh into the virtual machine and execute:
+#           * sudo journalctl
+#           * sudo journalctl -u cloud-final
+
+set -Eeu
+
+mkdir /etc/vault.d || true
+mkdir -p /opt/vault || true
+
+ip_address="$(ip addr show eth0 | perl -n -e'/ inet (\d+(\.\d+)+)/ && print $1')"
+
+cat <<'EOF' > /etc/vault.d/vault.hcl
+storage "raft" {
+  path = "/opt/vault"
+  retry_join {
+    auto_join = "provider=azure tenant_id=${tenant_id} subscription_id=${subscription_id} vm_scale_set=${vmss_name} resource_group=${resource_group_name}"
+  }
+}
+
+api_addr = "http://$ip_address:8200"
+cluster_addr = "http://$ip_address:8201"
+
+listener "tcp" {
+  address     = "0.0.0.0:8200"
+  tls_disable = 1
+}
+
+disable_mlock = true
+ui = true
+
+seal "azurekeyvault" {
+  client_id      = "${client_id}"
+  client_secret  = "${client_secret}"
+  tenant_id      = "${tenant_id}"
+  vault_name     = "${vault_name}"
+  key_name       = "${key_name}"
+}
+
+EOF
+
+chown -R vault. /etc/vault.d
+chown -R vault. /opt/vault
+chmod 0644 /etc/vault.d/vault.hcl
+
+
+systemctl enable vault
+systemctl restart vault
+
+cat >/etc/profile.d/vault.sh <<'EOF'
+export VAULT_ADDR=http://127.0.0.1:8200
+export VAULT_SKIP_VERIFY=true
+EOF
+
+# TODO why isn't this in $HOME?
+cat >/tmp/azure_auth.sh <<'EOF'
+#!/usr/bin/env bash
+set -euxo pipefail
+# for more information see:
+#   * https://www.vaultproject.io/docs/auth/azure
+#   * https://www.vaultproject.io/api/auth/azure
+
+vault auth enable azure
+
+vault write auth/azure/config \
+  tenant_id="${tenant_id}" \
+  resource="https://management.azure.com/" \
+  client_id="${client_id}" \
+  client_secret="${client_secret}"
+
+vault write auth/azure/role/dev-role \
+  policies="default" \
+  bound_subscription_ids="${subscription_id}" \
+  bound_resource_groups="${resource_group_name}"
+# create a vault login token for the current virtual machine identity (as
+# returned by the azure instance metadata service).
+# NB use the returned token to login into vault using `vault login`.
+# see https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/how-to-use-vm-token
+# see https://docs.microsoft.com/en-us/azure/virtual-machines/linux/instance-metadata-service
+vault write auth/azure/login \
+  role="dev-role" \
+  jwt="$(curl 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https%3A%2F%2Fmanagement.azure.com%2F' -H Metadata:true -s | jq -r .access_token)" \
+  subscription_id="${subscription_id}" \
+  resource_group_name="${resource_group_name}" \
+  vm_name="`hostname`"
+EOF
+
+chmod +x /tmp/azure_auth.sh
