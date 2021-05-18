@@ -6,7 +6,9 @@ variable "location" {
 # Azure Service account to use
 variable "azure_tenant_id" {}
 variable "azure_client_id" {}
-variable "azure_client_secret" {}
+variable "azure_client_secret" {
+  sensitive = true
+}
 variable "azure_subscription_id" {}
 
 variable "vault_resource_group_name" {
