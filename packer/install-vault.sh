@@ -10,4 +10,4 @@ sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(l
 
 # Install Vault
 sudo apt-get update
-sudo apt-get install vault=${1.7.1}
+sudo apt-get install vault=${vault_version}

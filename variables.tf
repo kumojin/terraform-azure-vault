@@ -43,6 +43,6 @@ variable "vault_key_vault_name" {
   default = "vault-kv"
 }
 
-variable "vaul_public_domain_name" {
+variable "vault_public_domain_name" {
   description = "Domain name label for vault public IP"
 }

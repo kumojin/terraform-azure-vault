@@ -16,8 +16,6 @@ resource "azurerm_key_vault" "vault" {
   tenant_id           = var.azure_tenant_id
 
   # enable virtual machines to access this key vault.
-  # NB this identity is used in the example /tmp/azure_auth.sh file.
-  #    vault is actually using the vault service principal.
   enabled_for_deployment = true
 
   sku_name = "standard"
@@ -67,8 +65,4 @@ resource "azurerm_key_vault_key" "vault-key" {
     "wrapKey",
     "unwrapKey",
   ]
-}
-
-output "key_vault_name" {
-  value = azurerm_key_vault.vault.name
 }

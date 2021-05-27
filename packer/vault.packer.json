@@ -30,6 +30,9 @@
     {
       "type": "shell",
       "script": "install-vault.sh",
+      "environment_vars": [
+        "vault_version={{user `vault_version`}}"
+      ],
       "execute_command": "echo '' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'"
     },
     {
