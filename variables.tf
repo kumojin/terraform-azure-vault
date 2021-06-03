@@ -45,6 +45,10 @@ variable "vault_key_vault_name" {
   default = "vault-kv"
 }
 
-variable "vault_public_domain_name" {
-  description = "Domain name label for vault public IP"
+variable "nginx_source_image_id" {
+  description = "Image ID created with packer containing Nginx and Certbot"
+}
+
+variable "cert_domain_name" {
+  description = "TLS certificate's FQDN"
 }
