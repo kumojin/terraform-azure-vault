@@ -144,9 +144,7 @@ When everything works correctly, both `vault-nsg` and `nginx-nsg` have inbound s
 
 ### Debugging
 
-If something goes wrong, SSH access to one of the VM might be necessary. Unless configured otherwise, this can only be done from where Terraform was run, since this is where the SSH public key was copied.
-
-The Nginx VM can be accessed through the domain name, port 22, while the Vault instance VMs can be reached via the IP address and port that an be found in the Load Balancer `vault-lb`, under the Inbound NAT Rules section. For example:
+If something goes wrong, SSH access to one of the VM might be necessary. The Nginx VM can be accessed through the domain name, port 22, while the Vault instance VMs can be reached via the IP address and port that an be found in the Load Balancer `vault-lb`, under the Inbound NAT Rules section. For example:
 
 ```bash
 ssh vm-user@example.com

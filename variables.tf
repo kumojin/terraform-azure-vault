@@ -27,12 +27,12 @@ variable "vault_instances_count" {
 }
 
 variable "vault_instances_admin_user" {
-  description = "The SSH admin user name"
+  description = "Vault's SSH admin user name"
   default = "vm-user"
 }
 
 variable "vault_instances_admin_ssh_key_path" {
-  description = "The SSH admin user public key path"
+  description = "Vault's SSH admin user public key path"
   default = "~/.ssh/id_rsa.pub"
 }
 
@@ -47,6 +47,21 @@ variable "vault_key_vault_name" {
 
 variable "nginx_source_image_id" {
   description = "Image ID created with packer containing Nginx and Certbot"
+}
+
+variable "nginx_vm_size" {
+  description = "Virtual Machine size for the Nginx server"
+  default = "Standard_DS1_v2"
+}
+
+variable "nginx_vm_admin_user" {
+  description = "Nginx's SSH admin user name"
+  default = "vm-user"
+}
+
+variable "nginx_vm_admin_ssh_key_path" {
+  description = "Nginx's SSH admin user public key path"
+  default = "~/.ssh/id_rsa.pub"
 }
 
 variable "cert_domain_name" {

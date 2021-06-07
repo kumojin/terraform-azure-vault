@@ -86,7 +86,7 @@ resource "azurerm_linux_virtual_machine" "nginx_cert" {
   name                = "nginx-cert-vm"
   resource_group_name = azurerm_resource_group.vault.name
   location            = azurerm_resource_group.vault.location
-  size                = "Standard_DS1_v2" #"Standard_B1s"
+  size                = var.nginx_vm_size
   custom_data         = base64encode(data.template_file.nginx_setup.rendered)
 
   network_interface_ids = [
@@ -100,9 +100,9 @@ resource "azurerm_linux_virtual_machine" "nginx_cert" {
 
   source_image_id = var.nginx_source_image_id
 
-  admin_username = "vm-user"
+  admin_username = var.nginx_vm_admin_user
   admin_ssh_key {
-    username   = "vm-user"
-    public_key = file("~/.ssh/id_rsa.pub")
+    username   = var.nginx_vm_admin_user
+    public_key = file(var.nginx_vm_admin_ssh_key_path)
   }
 }
