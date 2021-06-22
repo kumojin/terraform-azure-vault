@@ -1,12 +1,10 @@
 # Vault VM Image
 
-This Packer configuration will generate an Azure virtual machine image containing the [Vault](https://www.hashicorp.com/products/vault) application.
+This Packer configuration will generate an Azure virtual machine image containing an [Nginx](https://nginx.org/) server and the Let's Encrypt [certbot](https://certbot.eff.org/) service.
 
 ## Initial Steps
 
-Before running Packer for the first time you will need to do a one-time initial setup.
-
-The following sub-sections will output the required tenant id, subscription id, and client credentials.
+This needs an Azure tenant, a subscription, and a service principal. The following sub-sections will take care of this, if needed, by outputing the required tenant id, subscription id, and client credentials.
 
 ### Using Azure CLI
 
@@ -41,7 +39,7 @@ $sp.ApplicationId
 
 ## Building the Image
 
-From the `packer` folder, the VM image can be built using the following command:
+From the `packer-nginx` folder, the VM image can be built using the following command:
 
 ```bash
 packer build \
@@ -52,7 +50,9 @@ packer build \
     -var client_secret='xxx' \
     -var tenant_id='xxx' \
     -var subscription_id='xxx' \
-    vault.packer.json
+    nginx.packer.json
 ```
 
-To learn more about using Packer on Azure see [here](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/build-image-with-packer).
+The resulting image's id will be in the format `/subscriptions/{subscription_id}/resourceGroups/packer-vault-images/providers/Microsoft.Compute/images/nginx-{timestamp}`.
+
+More information about using Packer on Azure can be found [here](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/build-image-with-packer).
