@@ -4,5 +4,7 @@
   "subscription_id": "",
   "client_id": "",
   "client_secret": "",
-  "resource_group_name": ""
+  "resource_group_name": "",
+
+  "vm_size": "Standard_DS2_v2"
 }

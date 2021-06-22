@@ -48,7 +48,7 @@ terraform plan \
   -var azure_client_secret=secret \
   -var vault_source_image_id=/subscriptions/be45123f-2769-4b5a-a7d1-5d3772b11a8b/resourceGroups/my-resource-group/providers/Microsoft.Compute/images/vault-image \
   -var nginx_source_image_id=/subscriptions/be45123f-2769-4b5a-a7d1-5d3772b11a8b/resourceGroups/my-resource-group/providers/Microsoft.Compute/images/nginx-image \
-  -var cert_domain_name=example.com
+  -var cert_domain_name=example.com \
   -out vault.pln
 ```
 
@@ -94,6 +94,8 @@ At this point, `certbot` should already be set up in a cron job to periodically 
 systemctl list-timers --all
 sudo certbot renew --dry-run
 ```
+
+The SSH session can be closed.
 
 ### Initializing the Vault Cluster
 

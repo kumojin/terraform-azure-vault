@@ -13,6 +13,7 @@
       "managed_image_resource_group_name": "{{user `resource_group_name`}}",
       "managed_image_name": "nginx-{{isotime \"2006-01-02T030405\"}}",
 
+      "vm_size": "{{user `vm_size`}}",
       "os_type": "Linux",
       "image_publisher": "Debian",
       "image_offer": "debian-10",
