@@ -122,6 +122,10 @@ The Vault UI can be accessed via a browser at `${DOMAIN_NAME}:8200`, using the r
 
 There are a lot of documentation and tutorials about this. For example, Azure can be used to handle Vault's backend - see [secret engine](https://www.vaultproject.io/api/secret/azure), [authentication](https://www.vaultproject.io/api/auth/azure), and [secret management](https://learn.hashicorp.com/tutorials/vault/azure-secrets).
 
+### Retrieving Vault Secrets from Kubernetes
+
+The file [README_K8S.md](./README_K8S.md) contains information about how to retrieve Vault secrets for use in Kubernetes applications.
+
 ### Strengthening for Production
 
 Some best practices for production deployments should then be considered.
@@ -146,7 +150,7 @@ When everything works correctly, both `vault-nsg` and `nginx-nsg` have inbound s
 
 ### Debugging
 
-If something goes wrong, SSH access to one of the VM might be necessary. The Nginx VM can be accessed through the domain name, port 22, while the Vault instance VMs can be reached via the IP address and port that an be found in the Load Balancer `vault-lb`, under the Inbound NAT Rules section. For example:
+If something goes wrong, SSH access to one of the VM might be necessary. The Nginx VM can be accessed through the domain name, port 22, while the Vault instance VMs can be reached via the IP address and port that can be found in the Load Balancer `vault-lb`, under the Inbound NAT Rules section. For example:
 
 ```bash
 ssh vm-user@example.com
