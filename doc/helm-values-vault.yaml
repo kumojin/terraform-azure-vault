@@ -1,0 +1,146 @@
+# ref. https://github.com/hashicorp/vault-helm
+#
+# Default values can be listed with
+#
+#     helm show values hashicorp/vault
+
+global:
+  enabled: true
+
+  # The ingress in front of the Vault service will terminate the TLS, so the
+  # connections are unfortunately not end-to-end encrypted.
+  tlsDisable: true
+
+injector:
+  enabled: false
+
+server:
+  enabled: true
+
+  image:
+    repository: "vault"
+    tag: "1.7.3"
+
+  resources:
+    requests:
+      memory: 256Mi # Recommended 8Gi (?)
+      cpu: 250m # Recommended 2000m (?)
+    limits:
+      memory: 256Mi # Recommended 16Gi (?)
+      cpu: 2500m # Recommended 2000m (?)
+
+  readinessProbe:
+    enabled: true
+    path: "/v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204"
+  
+  livenessProbe:
+    enabled: true
+    path: "/v1/sys/health?standbyok=true"
+    initialDelaySeconds: 60
+
+  extraEnvironmentVars:
+    AZURE_TENANT_ID: < Azure tenant ID >
+    VAULT_AZUREKEYVAULT_VAULT_NAME: < Azure KeyVault name >
+    VAULT_AZUREKEYVAULT_KEY_NAME: < Azure KeyVault key name >
+    # VAULT_CACERT: /vault/userconfig/tls-ca/ca.crt
+
+  extraSecretEnvironmentVars:
+    - envName: AZURE_CLIENT_ID
+      secretName: azure-creds
+      secretKey: AZURE_CLIENT_ID
+    - envName: AZURE_CLIENT_SECRET
+      secretName: azure-creds
+      secretKey: AZURE_CLIENT_SECRET
+
+  extraVolumes:
+   - type: secret
+     name: vault-0004-tls
+
+  dataStorage:
+    enabled: true
+
+  auditStorage:
+    enabled: true
+
+  affinity: "" # Uncomment this line if the Kubernetes cluster has less than three nodes.
+
+  ingress:
+    enabled: true
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    hosts:
+      - host: vault-0004.dev.kumojin.com
+    tls:
+      - hosts:
+          - vault-0004.dev.kumojin.com
+        secretName: vault-0004-tls
+
+  ha:
+    enabled: true
+    replicas: 3 # Best practice 5
+
+    raft:
+      enabled: true
+      setNodeId: true
+
+      config: |
+        ui = true
+
+        listener "tcp" {
+          address = "[::]:8200"
+          cluster_address = "[::]:8201"
+          tls_disable = 1
+
+          # These certificates are not currently used.
+          tls_cert_file = "/vault/userconfig/vault-0004-tls/tls.crt"
+          tls_key_file  = "/vault/userconfig/vault-0004-tls/tls.key"
+        }
+
+        # If end-to-end encryption is needed, the following would open port 8300
+        # locally, for use with the vault CLI. The VAULT_ADDR variable also
+        # needs to reflect this in extraEnvironmentVars above, and be set to the
+        # new URL http://127.0.0.1:8300.
+        #listener "tcp" {
+        #  address = "127.0.0.1:8300"
+        #  tls_disable = 1
+        #}
+
+        # The tenant_id, vault_name, and key_name values are taken from server.extraEnvironmentVars,
+        # while the client_id and client_secret are stored in the azure-creds secret and taken from
+        # server.extraEnvironmentVars.
+        seal "azurekeyvault" {
+          # tenant_id     = $AZURE_TENANT_ID
+          # vault_name    = $VAULT_AZUREKEYVAULT_VAULT_NAME
+          # key_name      = $VAULT_AZUREKEYVAULT_KEY_NAME
+          # client_id     = $AZURE_CLIENT_ID
+          # client_secret = $AZURE_CLIENT_SECRET
+        }
+
+        storage "raft" {
+          path = "/vault/data"
+          retry_join {
+            auto_join = "provider=k8s namespace=vault"
+            auto_join_scheme = "http"
+          }
+        }
+
+        disable_mlock = true
+
+        service_registration "kubernetes" {}
+
+csi:
+  enabled: true
+
+  image:
+    repository: "hashicorp/vault-csi-provider"
+    tag: "0.3.0"
+
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 50m
+      memory: 128Mi
