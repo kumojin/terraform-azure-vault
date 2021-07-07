@@ -54,7 +54,7 @@ server:
 
   extraVolumes:
    - type: secret
-     name: vault-0004-tls
+     name: vault-tls
 
   dataStorage:
     enabled: true
@@ -71,11 +71,11 @@ server:
       kubernetes.io/ingress.class: nginx
       nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     hosts:
-      - host: vault-0004.dev.kumojin.com
+      - host: < Domain Name >
     tls:
       - hosts:
-          - vault-0004.dev.kumojin.com
-        secretName: vault-0004-tls
+          - < Domain Name >
+        secretName: vault-tls
 
   ha:
     enabled: true
@@ -94,8 +94,8 @@ server:
           tls_disable = 1
 
           # These certificates are not currently used.
-          tls_cert_file = "/vault/userconfig/vault-0004-tls/tls.crt"
-          tls_key_file  = "/vault/userconfig/vault-0004-tls/tls.key"
+          tls_cert_file = "/vault/userconfig/vault-tls/tls.crt"
+          tls_key_file  = "/vault/userconfig/vault-tls/tls.key"
         }
 
         # If end-to-end encryption is needed, the following would open port 8300
