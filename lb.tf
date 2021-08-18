@@ -3,7 +3,6 @@ resource "azurerm_public_ip" "vault" {
   location              = var.location
   resource_group_name   = azurerm_resource_group.vault.name
   allocation_method     = "Static"
-  domain_name_label     = var.vault_public_domain_name
   sku                   = "Standard"
 }
 

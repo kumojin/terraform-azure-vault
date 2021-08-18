@@ -1,0 +1,39 @@
+{
+  "description": "Nginx Image",
+  "builders": [
+    {
+      "type": "azure-arm",
+
+      "location": "{{user `location`}}",
+      "tenant_id": "{{user `tenant_id`}}",
+      "subscription_id": "{{user `subscription_id`}}",
+      "client_id": "{{user `client_id`}}",
+      "client_secret": "{{user `client_secret`}}",
+
+      "managed_image_resource_group_name": "{{user `resource_group_name`}}",
+      "managed_image_name": "nginx-{{isotime \"2006-01-02T030405\"}}",
+
+      "vm_size": "{{user `vm_size`}}",
+      "os_type": "Linux",
+      "image_publisher": "Debian",
+      "image_offer": "debian-10",
+      "image_sku": "10-gen2"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "script": "update-machine.sh",
+      "execute_command": "echo '' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'"
+    },
+    {
+      "type": "shell",
+      "script": "install-nginx.sh",
+      "execute_command": "echo '' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'"
+    },
+    {
+      "type": "shell",
+      "script": "install-custom.sh"
+    }
+  ]
+}
