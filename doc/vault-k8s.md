@@ -70,7 +70,13 @@ Some values in the `helm-values-vault.yaml` file needs to be changed.
 * `server.ingress.hosts.host` and `server.ingress.tls.hosts`, with the intended domain name
 * if the Vault cluster is not installed in the `vault` namespace: `server.ha.raft.config`, in the `storage "raft"` section, the name of the namespace
 
-Similarly to the CSI driver, Helm can be used for an easy installation of Vault. The following installs the raft-backed HA cluster in the `vault` namespace.
+Similarly to the CSI driver, Helm can be used for an easy installation of Vault. If not already in the system, the hashicorp helm repo can be added:
+
+```bash
+helm repo add hashicorp https://helm.releases.hashicorp.com
+```
+
+The following installs the raft-backed HA cluster in the `vault` namespace:
 
 ```bash
 helm install vault hashicorp/vault \

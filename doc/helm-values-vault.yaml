@@ -52,9 +52,9 @@ server:
       secretName: azure-creds
       secretKey: AZURE_CLIENT_SECRET
 
-  extraVolumes:
-   - type: secret
-     name: vault-tls
+  # extraVolumes:
+  #  - type: secret
+  #    name: vault-tls
 
   dataStorage:
     enabled: true
@@ -93,9 +93,10 @@ server:
           cluster_address = "[::]:8201"
           tls_disable = 1
 
-          # These certificates are not currently used.
-          tls_cert_file = "/vault/userconfig/vault-tls/tls.crt"
-          tls_key_file  = "/vault/userconfig/vault-tls/tls.key"
+          # These certificates are not currently used. This requires the
+          # commented-out server.extraVolumes above.
+          # tls_cert_file = "/vault/userconfig/vault-tls/tls.crt"
+          # tls_key_file  = "/vault/userconfig/vault-tls/tls.key"
         }
 
         # If end-to-end encryption is needed, the following would open port 8300
